@@ -30,7 +30,7 @@ namespace NotDefterim.Forms
             int id = Convert.ToInt32(user_dt.Rows[0]["id"]);
 
 
-            string query = "SELECT * FROM notes WHERE user_id = '" + id + "'";
+            string query = "SELECT * FROM notes WHERE user_id = '" + id + "' AND deleted = false";
 
 
             dataTable = dbConnection.get_npgsql(query);
@@ -104,7 +104,7 @@ namespace NotDefterim.Forms
         {
             int id = Convert.ToInt32(user_dt.Rows[0]["id"]);
 
-            string query = "SELECT * FROM notes WHERE user_id = '" + id + "'";
+            string query = "SELECT * FROM notes WHERE user_id = '" + id + "' AND deleted = false";
 
             DataTable tempDataTable = dbConnection.get_npgsql(query);
 
@@ -132,8 +132,8 @@ namespace NotDefterim.Forms
                             DataGridViewRow row = dataGridViewNotes.Rows[e.RowIndex];
                             string id = row.Cells["id"].Value.ToString();
 
-                            //notu silmek için gerekli query'yi yazıyoruz
-                            string query = "DELETE FROM notes WHERE id='" + id + "'";
+                            //notun deleted bool özelliği true olması için gerekli sorguyu yazıyoruz.
+                            string query = "UPDATE notes SET deleted=true WHERE id= '"+id+"'";
                             dbConnection.add_npgsql(query);
 
                             //datagridview'u refreshliyoruz ki ekran kapanmasada silinen veri değişikliği ekrana yansısın
