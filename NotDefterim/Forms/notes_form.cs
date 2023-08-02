@@ -113,6 +113,7 @@ namespace NotDefterim.Forms
             dataGridViewNotes.Refresh();
         }
         //Sil ve paylaş butonuna tıklandığımda yapılacak işlemler CellContentClick ile yapılıyor.
+        //SİL BUTONU İŞLEMLERİ
         private void dataGridViewNotes_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0 && e.ColumnIndex >= 0) // Tıklanan hücre geçerli bir hücre mi?
@@ -147,6 +148,37 @@ namespace NotDefterim.Forms
 
 
                     }
+                }
+                //PAYLAŞ BUTONU İŞLEMLERİ
+                else if(column.Name == "buttonShareColumn")
+                {
+                    if (column is DataGridViewButtonColumn) // Sütun bir düğme sütunu mu?
+                    {
+
+                        DataGridViewRow row = dataGridViewNotes.Rows[e.RowIndex];
+                        int id = Convert.ToInt32(row.Cells["id"].Value);
+                        int user_id = Convert.ToInt32(row.Cells["user_id"].Value);
+                        string noteTitle = row.Cells["noteTitle"].Value.ToString();
+                        string noteContent = row.Cells["noteContent"].Value.ToString();
+                        bool deleted = Convert.ToBoolean(row.Cells["deleted"].Value);
+                        DateTime createDate = Convert.ToDateTime(row.Cells["createDate"].Value);
+
+                        //not bilgilerini nesneye aktarıyoruz.
+                        note tempNoteShare = new note();
+                        tempNoteShare = new note();
+                        tempNoteShare.id = id;
+                        tempNoteShare.user_id = user_id;
+                        tempNoteShare.noteTitle = noteTitle;
+                        tempNoteShare.noteContent = noteContent;
+                        tempNoteShare.deleted = deleted;
+                        tempNoteShare.createDate = createDate;
+
+                        //aldığımız bilgileri açtığımız form ile gönderiyoruz. Paylaş ekranı classının constructorını düzenledim bunun için.
+                        share_note_form share_Note_Form = new share_note_form(tempNoteShare);
+                        share_Note_Form.ShowDialog();
+                    
+                    }
+
                 }
             }
         }

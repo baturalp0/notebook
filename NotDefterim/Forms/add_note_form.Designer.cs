@@ -44,6 +44,7 @@
             tbx_noteContent.ScrollBars = ScrollBars.Vertical;
             tbx_noteContent.Size = new Size(776, 317);
             tbx_noteContent.TabIndex = 0;
+            tbx_noteContent.TabStop = false;
             tbx_noteContent.TextChanged += tbx_noteContent_TextChanged;
             // 
             // btn_save
@@ -63,6 +64,7 @@
             tbx_header.Name = "tbx_header";
             tbx_header.Size = new Size(240, 23);
             tbx_header.TabIndex = 2;
+            tbx_header.TabStop = false;
             // 
             // lbl_header
             // 

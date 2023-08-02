@@ -61,6 +61,7 @@
             tbx_header.Name = "tbx_header";
             tbx_header.Size = new Size(240, 23);
             tbx_header.TabIndex = 7;
+            tbx_header.TabStop = false;
             // 
             // btn_save
             // 
@@ -82,6 +83,7 @@
             tbx_noteContent.ScrollBars = ScrollBars.Vertical;
             tbx_noteContent.Size = new Size(776, 317);
             tbx_noteContent.TabIndex = 5;
+            tbx_noteContent.TabStop = false;
             tbx_noteContent.TextChanged += tbx_noteContent_TextChanged;
             // 
             // edit_note_form
