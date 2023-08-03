@@ -1,4 +1,5 @@
 ﻿using NotDefterim.Context;
+using NotDefterim.Entities;
 using Npgsql;
 using System;
 using System.Collections.Generic;
@@ -6,10 +7,12 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace NotDefterim.Forms
 {
@@ -76,11 +79,6 @@ namespace NotDefterim.Forms
 
             }
 
-
-
-
-
-
         }
 
         void goToNotes()
@@ -123,5 +121,7 @@ namespace NotDefterim.Forms
                 btn_login_Click(this, new EventArgs());
             }
         }
+
+       
     }
 }

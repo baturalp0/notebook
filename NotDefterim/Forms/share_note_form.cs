@@ -29,12 +29,18 @@ namespace NotDefterim.Forms
         {
             //Burada insert işlemi ile notu paylaşacağım.
 
+            //Yazdığım metodlarla paylaşan kullanıcı, paylaşılan kullanıcı ve not nesnelerini alıp bunları değişkene aktarıyorum:
+            note note = returnNote();
+            user userSender = returnSenderUser();
+            user userShared = returnSharedUser();
+            
+
             //kullanıcının girdiği mail ve checkBox durumunu değişkenlere aktarıyorum.
             string shareEmail = tbx_shareEmail.Text;
             bool readOnly = cbx_share.Checked;
 
             
-            //Ekleme ypamadan önce email alanı boş mu kontrolünü yapmam gerekiyor.
+            //Sırasıyla yapacağım kontroller: 1-Email boş olamaz 2-Email db de var mı 3-e-mail db de varsa bile hesap aktif mi? 4- e_mail kişinin kendisinin mi?
             if(shareEmail.Length==0)
             {
                 MessageBox.Show("Mail adresi boş olamaz");
@@ -48,34 +54,54 @@ namespace NotDefterim.Forms
                 }
                 else
                 {
-                    //email DB'de varmış. Devam
+                    //email DB'de varmış. Şimdi DB'de varsa bile hesap aktif mi kontrolü yapacağım.
+                    if (userShared.active) //hesap aktif demektir
+                    {
 
-                    //aldığım email bilgisi ile sorgu oluşturup o email adresindeki kullanıcının bilgileri ile DataTable oluşturacağım. Bu dt'den user_id yi çekebilirim.
-                    string query = "SELECT * FROM users WHERE email = '" + shareEmail + "'";
-                    DataTable dtSharedUser = dbConnection.get_npgsql(query); //not kiminle paylaşıldıysa onun bilgilerini bu dt'a attık.
-                    int user_id = Convert.ToInt32(dtSharedUser.Rows[0]["id"]); //user_id içerisine notun paylaşıldığı user'ın user_id'sini atamış olduk.
+                        //Şimdi email kendisinin mi değil mi kontrolü yapıyoruz
+                        if (userSender.email.ToString() == shareEmail)
+                        {
+                            MessageBox.Show("Kendinize not gönderemezsiniz");
+                        }
+                        else
+                        {
+                            //Kendisinin değilmiş.
 
-                    //Paylaşılan notun bilgileri tempNoteShare nesnesinin içerisinde. (buradan not id ye ulaşabilirim.)
-                    int not_id = Convert.ToInt32(tempNoteShare.id);
+                            //Şimdi not önceden paylaşılmış mı onu kontrol edeceğiz.
 
-                    //Elimde user_id, paylaşılacak notun nesnesi , readonly durumu var. Eklemeyi yapabilirim
+                            if (isSharedNoteExist(note.id,userShared.id))
+                            {
+                                MessageBox.Show("Bu not zaten paylaşılmış");
+                            }
+                            else
+                            {
+                                //Tüm kontroller tamam. şimdi sorgumu yazıp insert işlemi yapacağım.
 
-                    string addQuery = "INSERT INTO \"sharedNotes\" (\"notId\",\"userId\",\"readOnly\") values ('" + not_id + "','" + user_id + "','" + readOnly + "') ";
-                    dbConnection.add_npgsql(addQuery); //sorguyu çalıştırıyoruz.
+                                string addQuery = "INSERT INTO \"sharedNotes\" (\"notId\",\"userId\",\"readOnly\") values ('" + note.id + "','" + userShared.id + "','" + readOnly + "') ";
+                                dbConnection.add_npgsql(addQuery); //sorguyu çalıştırıyoruz.
 
-                    MessageBox.Show("Başarıyla paylaşıldı!");
 
-                    this.Hide();
+                                MessageBox.Show("Başarıyla paylaşıldı!");
+
+                                this.Hide();
+
+                            }
+
+                            
+                        }
+                        
+                    }
+                    else{ //Hesap aktif değil demektir.
+                        MessageBox.Show("Bu hesap aktif değildir");
+                    }
+
+
+                    
                 }
 
             }
             
-
-
-
-
         }
-
 
         private long isEmailExist(string email)
         {
@@ -86,5 +112,115 @@ namespace NotDefterim.Forms
             connection.Close();
             return count;
         }
+
+        private user returnSharedUser() //Girilen e-mail ile sorgu çalıştırıp tablo oluşturuyorum. Tablo bilgilerini user nesnesine aktarıp bu nesneyi döndürüyorum.
+        {
+            string shareEmail = tbx_shareEmail.Text;
+            if (shareEmail.Length == 0) //boş mail olamaz kontrolü
+            {
+                return null;
+            }
+            else
+            {
+                if (isEmailExist(shareEmail) == 0) //db kontrolü
+                {
+                    return null;
+                }
+                else
+                {
+                    string query = "SELECT * FROM users WHERE email = '" + shareEmail + "'";
+                    DataTable dt = dbConnection.get_npgsql(query); //not kiminle paylaşıldıysa onun bilgilerini bu dt'a attık.
+                    int id = Convert.ToInt32(dt.Rows[0]["id"]);
+                    string name = dt.Rows[0]["name"].ToString();
+                    string surname = dt.Rows[0]["surname"].ToString();
+                    string email = dt.Rows[0]["email"].ToString();
+                    string password = dt.Rows[0]["password"].ToString();
+                    bool active = Convert.ToBoolean(dt.Rows[0]["active"]);
+                    DateTime createDate = Convert.ToDateTime(dt.Rows[0]["createDate"]);
+
+                    user user = new user();
+                    user.id = id;
+                    user.name = name;
+                    user.surname = surname;
+                    user.email = email;
+                    user.password = password;
+                    user.active = active;
+                    user.createDate = createDate;
+
+                    return user;
+
+                }
+
+            }
+
+
+
+
+                
+            
+        }
+
+        private note returnNote() //Tıklanan notu nesne oalrak dönen metod.
+        {
+            return tempNoteShare;
+        }  
+
+        private user returnSenderUser() //elimizdeki not nesnesinden user_id ye ulaşıp notun sahibi yani currentUsera ulaşabiliriz. Ulaştıktan sonra onu nesne olarak döndüreceğiz.
+        {
+            note note = new note();
+            note = returnNote();
+
+            int id = note.user_id;
+
+            string query = "SELECT * FROM users Where id= '" + id + "'";
+            DataTable dt = dbConnection.get_npgsql(query);
+
+            if (dt.Rows.Count > 0) // Eğer sonuç varsa devam et
+            {
+                DataRow row = dt.Rows[0]; // İlk satırı al
+
+                user user = new user
+                {
+                    id = Convert.ToInt32(row["id"]),
+                    name = row["name"].ToString(),
+                    surname = row["surname"].ToString(),
+                    email = row["email"].ToString(),
+                    password = row["password"].ToString(),
+                    active = Convert.ToBoolean(row["active"]),
+                    createDate = Convert.ToDateTime(row["createDate"])
+                };
+
+                return user;
+            }
+            else
+            {
+                // Kullanıcı bulunamadı veya hata durumu için uygun işlem yapılabilir.
+                return null; // Veya başka bir değer döndürülebilir.
+            }
+
+
+
+        }
+
+        private bool isSharedNoteExist(int not_id , int user_id)
+        {
+            string query = "SELECT * FROM \"sharedNotes\" WHERE \"notId\" = '"+not_id+"' AND \"userId\"= '"+user_id+"'";
+            DataTable dt = dbConnection.get_npgsql(query);
+            
+            if(dt.Rows.Count==0) //Dönen dt'nin satırı yok yani boş demektir
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+
+
+        }
+
+            
+
+        
     }
 }

@@ -33,7 +33,7 @@ namespace NotDefterim.Forms
 
         private void edit_note_form_Load(object sender, EventArgs e)
         {
-            //notlarım ekranından gelen veriyi not düzenle ekranına gösteriyoruz.
+            //notlarım ekranından gelen veriyi not düzenle ekranına gösteriyorum.
             tbx_noteContent.Text = tempNote.noteContent.ToString();
             tbx_header.Text = tempNote.noteTitle.ToString();
 
