@@ -61,7 +61,7 @@ namespace NotDefterim.Forms
                         //Şimdi email kendisinin mi değil mi kontrolü yapıyoruz
                         if (userSender.email.ToString() == shareEmail)
                         {
-                            MessageBox.Show("Kendinize not gönderemezsiniz");
+                            MessageBox.Show("Bu not kullanıcıda zaten mecvut");
                         }
                         else
                         {
