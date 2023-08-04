@@ -93,8 +93,9 @@ namespace NotDefterim.Forms
                 if (e.RowIndex >= 0)
                 {
                     DataGridViewRow row = dataGridViewNotes.Rows[e.RowIndex];
+                    int notId = Convert.ToInt32(row.Cells["id"].Value);
 
-                    if (row.Cells["readOnly"].Value != DBNull.Value)
+                    if (isUserOwner(notId))
                     {
                             row.DefaultCellStyle.BackColor = Color.Yellow;
 
@@ -141,8 +142,10 @@ namespace NotDefterim.Forms
                     {
 
                         DataGridViewRow row = dataGridViewNotes.Rows[e.RowIndex];
+                        int notId = Convert.ToInt32(row.Cells["id"].Value);
 
-                        if (row.Cells["readOnly"].Value != DBNull.Value) //readOnly null değilse not başkasından gelmiş demektir.
+
+                        if (isUserOwner(notId)) //readOnly null değilse not başkasından gelmiş demektir.
                         {
                             //not silme işlemini burada yapacağız.
                             //Silmek istediğine emin misin? uyarısı verip cevaba göre devam ediyoruz
@@ -278,6 +281,29 @@ namespace NotDefterim.Forms
                     edit_Note_Form.ShowDialog();
                 }
             }
+        }
+
+        bool isUserOwner(int not_id) //id'si yollanan not giriş yapmış kullanıcının oluşturduğu bir not ise true dönecek yoksa false dönecek
+        { 
+            int currentUserId = Convert.ToInt32(user_dt.Rows[0]["id"]); //giriş yapmış kullanıcının id'si
+            int notId = not_id; //fonksiyona gönderilen notun id'si
+
+            string query = "SELECT * FROM notes WHERE id= '"+not_id+"'"; //id'si gönderilen notun sorgusu
+            DataTable tempDT = dbConnection.get_npgsql(query);
+
+            int noteOwnerId = Convert.ToInt32(tempDT.Rows[0]["user_id"]); //not sahibinin id'si
+
+            if (noteOwnerId != currentUserId) //not oluşturulmuş. Yani giriş yapan kişi notun sahibi
+            {
+                return true;
+            }
+            else //not paylaşım yoluyla alınmış. Giriş yapan kişi notun sahibi değil
+            {
+                return false;
+            }
+
+
+
         }
 
        
