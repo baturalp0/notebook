@@ -16,13 +16,15 @@ namespace NotDefterim.Forms
     public partial class edit_note_form : Form
     {
         private note tempNote;
+        private bool? readOnly;
         notes_form notes_Form; // notes_form örneğini burada tanımlayın
         db_connection dbConnection = new db_connection();
 
-        public edit_note_form(note tempNote)
+        public edit_note_form(note tempNote,bool? readOnly)
         {
             InitializeComponent();
             this.tempNote = tempNote;
+            this.readOnly = readOnly; //not ekranında çif tıklama ile gelen readOnly bilgisini aldık bu şekilde. null true ya da false
             notes_Form = Application.OpenForms["notes_form"] as notes_form; // notes_form örneğini oluşturun.Notlarım ekranındaki datagridview'u refreshlemek için kullandım aşşağıda.
             //Application.OpenForms koleksiyonu uygulamanın şu anda açık olan tüm formlarına eerişmeyi sağlıyor.
             //Application.OpenForms["notes_form"] ifadesi, koleksiyon içinde notes_form adına sahip bir form arar ve bu formun örneğini döndürür. Eğer böyle bir form bulunamazsa, null değeri döner.
@@ -36,6 +38,14 @@ namespace NotDefterim.Forms
             //notlarım ekranından gelen veriyi not düzenle ekranına gösteriyorum.
             tbx_noteContent.Text = tempNote.noteContent.ToString();
             tbx_header.Text = tempNote.noteTitle.ToString();
+
+            if (readOnly == true) //not düzenlenebilir demek. Bir şey yapma 
+            {
+                tbx_header.ReadOnly = true;
+                tbx_noteContent.ReadOnly = true;
+                btn_save.Visible = false;
+            }
+            
 
         }
 

@@ -263,8 +263,18 @@ namespace NotDefterim.Forms
                     tempNote.createDate = createDate;
 
 
-                    //aldığımız bilgileri açtığımız form ile gönderiyoruz. Not düzenle ekranı classının constructorını düzenledim bunun için.
-                    edit_note_form edit_Note_Form = new edit_note_form(tempNote);
+                    //aldığımız bilgileri ve readOnly özelliğini açtığımız form ile gönderiyoruz. Not düzenle ekranı classının constructorını düzenledim bunun için.
+
+                    //bool? readOnly = Convert.ToBoolean(row.Cells["readOnly"].Value); //readOnly null değilse not başkasından gelmiş demektir.
+
+                    bool? isReadOnly = null; // readOnly kontrolü için kullanılacak
+
+                    if (row.Cells["readOnly"].Value != DBNull.Value)
+                    {
+                        isReadOnly = Convert.ToBoolean(row.Cells["readOnly"].Value);
+                    }
+
+                    edit_note_form edit_Note_Form = new edit_note_form(tempNote,isReadOnly);
                     edit_Note_Form.ShowDialog();
                 }
             }
