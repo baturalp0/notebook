@@ -89,7 +89,23 @@ namespace NotDefterim.Forms
                     e.Value = (e.RowIndex + 1).ToString();
                     e.FormattingApplied = true;
                 }
+
+                if (e.RowIndex >= 0)
+                {
+                    DataGridViewRow row = dataGridViewNotes.Rows[e.RowIndex];
+
+                    if (row.Cells["readOnly"].Value != DBNull.Value)
+                    {
+                            row.DefaultCellStyle.BackColor = Color.Yellow;
+
+                    }
+                }
             }
+
+
+            dataGridViewNotes.CellFormatting += DataGridView1_CellFormatting;
+
+
         }
 
         private void btn_addNotes_Click(object sender, EventArgs e)
@@ -124,8 +140,9 @@ namespace NotDefterim.Forms
                     if (column is DataGridViewButtonColumn) // Sütun bir düğme sütunu mu?
                     {
 
-                        bool readOnly = Convert.ToBoolean(dataTable.Rows[0]["readOnly"]);
-                        if (readOnly == true) // note başkasından gelmiş ve sadece okunabilir
+                        DataGridViewRow row = dataGridViewNotes.Rows[e.RowIndex];
+
+                        if (row.Cells["readOnly"].Value != DBNull.Value) //readOnly null değilse not başkasından gelmiş demektir.
                         {
                             //not silme işlemini burada yapacağız.
                             //Silmek istediğine emin misin? uyarısı verip cevaba göre devam ediyoruz
@@ -133,33 +150,6 @@ namespace NotDefterim.Forms
                             if (dialogResult == DialogResult.Yes)
                             {
                                 //tıkladığımız notun id'sini alıyoruz
-                                DataGridViewRow row = dataGridViewNotes.Rows[e.RowIndex];
-                                string id = row.Cells["id"].Value.ToString();
-                                //o anda giriş yapmış kullanıcının id'sini alıyoruz (notu teslim alan kişinin id'si yani)
-                                int user_id = Convert.ToInt32(user_dt.Rows[0]["id"]);
-
-                                //notun deleted bool özelliği true olması için gerekli sorguyu yazıyoruz.
-                                string query = "DELETE FROM \"sharedNotes\" WHERE \"notId\"= '"+id+"' and \"userId\"='"+user_id+"'";
-                                dbConnection.add_npgsql(query);
-
-                                //datagridview'u refreshliyoruz ki ekran kapanmasada silinen veri değişikliği ekrana yansısın
-                                refreshDataGridViewNotes();
-
-                            }
-                            else if (dialogResult == DialogResult.No)
-                            {
-                                //form otomatik kapanıyor burada bir şey yapmaya gerek yok.
-                            }
-                        }
-                        else if (readOnly == false) //not başkasından gelmiş ve hem okunabilir hem yazılabilir
-                        {
-                            //not silme işlemini burada yapacağız.
-                            //Silmek istediğine emin misin? uyarısı verip cevaba göre devam ediyoruz
-                            DialogResult dialogResult = MessageBox.Show("Paylaşılan Notu silmek istediğinizden emin misiniz?", "Sil", MessageBoxButtons.YesNo);
-                            if (dialogResult == DialogResult.Yes)
-                            {
-                                //tıkladığımız notun id'sini alıyoruz
-                                DataGridViewRow row = dataGridViewNotes.Rows[e.RowIndex];
                                 string id = row.Cells["id"].Value.ToString();
                                 //o anda giriş yapmış kullanıcının id'sini alıyoruz (notu teslim alan kişinin id'si yani)
                                 int user_id = Convert.ToInt32(user_dt.Rows[0]["id"]);
@@ -170,21 +160,21 @@ namespace NotDefterim.Forms
 
                                 //datagridview'u refreshliyoruz ki ekran kapanmasada silinen veri değişikliği ekrana yansısın
                                 refreshDataGridViewNotes();
+
                             }
                             else if (dialogResult == DialogResult.No)
                             {
                                 //form otomatik kapanıyor burada bir şey yapmaya gerek yok.
                             }
                         }
-                        else { //not başkasından gelmemiş. Oluşturulmuş
-
-                               //not silme işlemini burada yapacağız.
+                        else //readOnly null ise not oluşturulmuş demektir.
+                        {
+                            //not silme işlemini burada yapacağız.
                             //Silmek istediğine emin misin? uyarısı verip cevaba göre devam ediyoruz
                             DialogResult dialogResult = MessageBox.Show("Notu silmek istediğinizden emin misiniz?", "Sil", MessageBoxButtons.YesNo);
                             if (dialogResult == DialogResult.Yes)
                             {
                                 //tıkladığımız notun id'sini alıyoruz
-                                DataGridViewRow row = dataGridViewNotes.Rows[e.RowIndex];
                                 string id = row.Cells["id"].Value.ToString();
 
                                 //notun deleted bool özelliği true olması için gerekli sorguyu yazıyoruz.
@@ -279,5 +269,7 @@ namespace NotDefterim.Forms
                 }
             }
         }
+
+       
     }
 }
