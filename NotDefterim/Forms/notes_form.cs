@@ -30,7 +30,7 @@ namespace NotDefterim.Forms
             int id = Convert.ToInt32(user_dt.Rows[0]["id"]);
 
 
-            string query = "SELECT n.*,sn.\"readOnly\"\r\nFROM notes n\r\nLEFT JOIN \"sharedNotes\" sn ON n.id = sn.\"notId\"\r\nWHERE (n.user_id = '"+id+"' AND n.deleted = false)\r\n   OR (sn.\"userId\" = '"+id+"' AND n.id = sn.\"notId\")";
+            string query = "SELECT n.*, sn.\"readOnly\",\"shareTime\"\r\nFROM notes n\r\nLEFT JOIN \"sharedNotes\" sn ON n.id = sn.\"notId\"\r\nWHERE (n.user_id = '"+id+"' AND n.deleted = false)\r\n   OR (sn.\"userId\" = '"+id+"' AND n.id = sn.\"notId\")\r\nORDER BY CASE WHEN sn.\"readOnly\" IS NULL THEN 0 ELSE 1 END ASC, n.\"createDate\" ASC, \r\n         CASE WHEN sn.\"readOnly\" IS NOT NULL THEN sn.\"shareTime\" END ASC;\r\n";
 
 
             dataTable = dbConnection.get_npgsql(query);
@@ -120,7 +120,7 @@ namespace NotDefterim.Forms
         {
             int id = Convert.ToInt32(user_dt.Rows[0]["id"]);
 
-            string query = "SELECT n.*,sn.\"readOnly\"\r\nFROM notes n\r\nLEFT JOIN \"sharedNotes\" sn ON n.id = sn.\"notId\"\r\nWHERE (n.user_id = '" + id + "' AND n.deleted = false)\r\n   OR (sn.\"userId\" = '" + id + "' AND n.id = sn.\"notId\")";
+            string query = "SELECT n.*, sn.\"readOnly\",\"shareTime\"\r\nFROM notes n\r\nLEFT JOIN \"sharedNotes\" sn ON n.id = sn.\"notId\"\r\nWHERE (n.user_id = '" + id + "' AND n.deleted = false)\r\n   OR (sn.\"userId\" = '" + id + "' AND n.id = sn.\"notId\")\r\nORDER BY CASE WHEN sn.\"readOnly\" IS NULL THEN 0 ELSE 1 END ASC, n.\"createDate\" ASC, \r\n         CASE WHEN sn.\"readOnly\" IS NOT NULL THEN sn.\"shareTime\" END ASC;\r\n";
 
             DataTable tempDataTable = dbConnection.get_npgsql(query);
 
@@ -204,7 +204,7 @@ namespace NotDefterim.Forms
                         DataGridViewRow row = dataGridViewNotes.Rows[e.RowIndex];
                         int id = Convert.ToInt32(row.Cells["id"].Value);
                         int user_id = Convert.ToInt32(row.Cells["user_id"].Value);
-                        string noteTitle = row.Cells["noteTitle"].Value.ToString();
+                        string noteTitle = row.Cells["noteTitle"].Value.ToString(); 
                         string noteContent = row.Cells["noteContent"].Value.ToString();
                         bool deleted = Convert.ToBoolean(row.Cells["deleted"].Value);
                         DateTime createDate = Convert.ToDateTime(row.Cells["createDate"].Value);
