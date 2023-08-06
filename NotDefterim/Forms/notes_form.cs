@@ -27,15 +27,8 @@ namespace NotDefterim.Forms
 
         private void notes_form_Load(object sender, EventArgs e)
         {
-            int id = Convert.ToInt32(user_dt.Rows[0]["id"]);
 
-
-            string query = "SELECT n.*, sn.\"readOnly\",\"shareTime\"\r\nFROM notes n\r\nLEFT JOIN \"sharedNotes\" sn ON n.id = sn.\"notId\"\r\nWHERE (n.user_id = '" + id + "' AND n.deleted = false)\r\n   OR (sn.\"userId\" = '" + id + "' AND n.id = sn.\"notId\")\r\nORDER BY CASE WHEN sn.\"readOnly\" IS NULL THEN 0 ELSE 1 END ASC, n.\"createDate\" ASC, \r\n         CASE WHEN sn.\"readOnly\" IS NOT NULL THEN sn.\"shareTime\" END ASC;\r\n";
-
-
-            dataTable = dbConnection.get_npgsql(query);
-
-            dataGridViewNotes.DataSource = dataTable;
+            sortTable();
 
             foreach (DataGridViewColumn column in dataGridViewNotes.Columns) //Notlar sütunu hariç diğerlerini gizledim
             {
@@ -83,6 +76,10 @@ namespace NotDefterim.Forms
 
             void DataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)  //en baştaki not sayılarını gösteren sütunu eklemek için kullandığım metod 
             {
+                DataGridViewRow row = dataGridViewNotes.Rows[e.RowIndex];
+                int notId = Convert.ToInt32(row.Cells["id"].Value);
+
+
                 // "RowNumber" sütununu biçimlendirme
                 if (e.ColumnIndex == 0 && e.RowIndex >= 0) // Sadece "RowNumber" sütunu için işlem yaptık
                 {
@@ -92,8 +89,7 @@ namespace NotDefterim.Forms
 
                 if (e.RowIndex >= 0)
                 {
-                    DataGridViewRow row = dataGridViewNotes.Rows[e.RowIndex];
-                    int notId = Convert.ToInt32(row.Cells["id"].Value);
+                    
 
                     if (isUserOwner(notId))
                     {
@@ -101,6 +97,9 @@ namespace NotDefterim.Forms
 
                     }
                 }
+
+                
+
             }
 
 
@@ -333,5 +332,47 @@ namespace NotDefterim.Forms
             login_form.ShowDialog();
             
         }
+
+        private void sortTable()
+        {
+            int id = Convert.ToInt32(user_dt.Rows[0]["id"]);
+
+            string query = "SELECT n.*, sn.\"readOnly\",\"shareTime\"\r\nFROM notes n\r\nLEFT JOIN \"sharedNotes\" sn ON n.id = sn.\"notId\"\r\nWHERE (n.user_id = '" + id + "' AND n.deleted = false)\r\n   OR (sn.\"userId\" = '" + id + "' AND n.id = sn.\"notId\")\r\nORDER BY CASE WHEN sn.\"readOnly\" IS NULL THEN 0 ELSE 1 END ASC, n.\"createDate\" ASC, \r\n         CASE WHEN sn.\"readOnly\" IS NOT NULL THEN sn.\"shareTime\" END ASC;\r\n";
+
+            dataTable = dbConnection.get_npgsql(query);
+
+            dataGridViewNotes.DataSource = dataTable;
+
+            //not sahibi giriş yapmış kullanıcı
+
+            DataTable tempDt = dataTable.AsEnumerable()
+            .Where(row => row.Field<int>("user_id") == id)
+            .OrderBy(row => row.Field<DateTime>("createDate"))
+            .CopyToDataTable();
+
+            //not paylaşım yoluyla alınmış
+
+            DataTable tempDt2 = dataTable.AsEnumerable()
+           .Where(row => row.Field<int>("user_id") != id)
+           .OrderBy(row => row.Field<DateTime>("shareTime"))
+           .CopyToDataTable();
+
+
+            // Ayıklanan ve sıralanan verileri birleştiriyoruz
+            DataTable mergedDataTable = new DataTable();
+            mergedDataTable = tempDt.Copy();
+            foreach (DataRow row in tempDt2.Rows)
+            {
+                mergedDataTable.ImportRow(row);
+            }
+
+            // Birleştirilmiş veriyi DataGridView'a atıyoruz
+            dataGridViewNotes.DataSource = mergedDataTable;
+
+
+        }
+
+
+
     }
 }
