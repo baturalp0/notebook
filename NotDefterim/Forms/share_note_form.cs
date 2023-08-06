@@ -33,22 +33,22 @@ namespace NotDefterim.Forms
             note note = returnNote();
             user userSender = returnSenderUser();
             user userShared = returnSharedUser();
-            
+
 
             //kullanıcının girdiği mail ve checkBox durumunu değişkenlere aktarıyorum.
             string shareEmail = tbx_shareEmail.Text;
             bool readOnly = cbx_share.Checked;
 
-            
+
             //Sırasıyla yapacağım kontroller: 1-Email boş olamaz 2-Email db de var mı 3-e-mail db de varsa bile hesap aktif mi? 4- e_mail kişinin kendisinin mi?
-            if(shareEmail.Length==0)
+            if (shareEmail.Length == 0)
             {
                 MessageBox.Show("Mail adresi boş olamaz");
             }
             else
             {
                 //email boş değilmiş. email DB'de var mı kontrol etmem gerekiyor.
-                if (isEmailExist(shareEmail)==0)
+                if (isEmailExist(shareEmail) == 0)
                 {
                     MessageBox.Show("Mail adresi geçersiz. Lütfen kontrol edin.");
                 }
@@ -69,7 +69,7 @@ namespace NotDefterim.Forms
 
                             //Şimdi not önceden paylaşılmış mı onu kontrol edeceğiz.
 
-                            if (isSharedNoteExist(note.id,userShared.id))
+                            if (isSharedNoteExist(note.id, userShared.id))
                             {
                                 MessageBox.Show("Bu not zaten paylaşılmış");
                             }
@@ -87,20 +87,21 @@ namespace NotDefterim.Forms
 
                             }
 
-                            
+
                         }
-                        
+
                     }
-                    else{ //Hesap aktif değil demektir.
+                    else
+                    { //Hesap aktif değil demektir.
                         MessageBox.Show("Bu hesap aktif değildir");
                     }
 
 
-                    
+
                 }
 
             }
-            
+
         }
 
         private long isEmailExist(string email)
@@ -156,14 +157,14 @@ namespace NotDefterim.Forms
 
 
 
-                
-            
+
+
         }
 
         private note returnNote() //Tıklanan notu nesne oalrak dönen metod.
         {
             return tempNoteShare;
-        }  
+        }
 
         private user returnSenderUser() //elimizdeki not nesnesinden user_id ye ulaşıp notun sahibi yani currentUsera ulaşabiliriz. Ulaştıktan sonra onu nesne olarak döndüreceğiz.
         {
@@ -202,12 +203,12 @@ namespace NotDefterim.Forms
 
         }
 
-        private bool isSharedNoteExist(int not_id , int user_id)
+        private bool isSharedNoteExist(int not_id, int user_id)
         {
-            string query = "SELECT * FROM \"sharedNotes\" WHERE \"notId\" = '"+not_id+"' AND \"userId\"= '"+user_id+"'";
+            string query = "SELECT * FROM \"sharedNotes\" WHERE \"notId\" = '" + not_id + "' AND \"userId\"= '" + user_id + "'";
             DataTable dt = dbConnection.get_npgsql(query);
-            
-            if(dt.Rows.Count==0) //Dönen dt'nin satırı yok yani boş demektir
+
+            if (dt.Rows.Count == 0) //Dönen dt'nin satırı yok yani boş demektir
             {
                 return false;
             }
@@ -219,8 +220,8 @@ namespace NotDefterim.Forms
 
         }
 
-            
 
-        
+
+
     }
 }

@@ -41,7 +41,7 @@
             // btn_signin
             // 
             btn_signin.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            btn_signin.Location = new Point(176, 309);
+            btn_signin.Location = new Point(172, 284);
             btn_signin.Name = "btn_signin";
             btn_signin.Size = new Size(124, 61);
             btn_signin.TabIndex = 0;
@@ -97,7 +97,7 @@
             groupBox1.Controls.Add(tbx_password);
             groupBox1.Controls.Add(tbx_surname);
             groupBox1.ForeColor = SystemColors.ActiveBorder;
-            groupBox1.Location = new Point(108, 70);
+            groupBox1.Location = new Point(104, 45);
             groupBox1.Name = "groupBox1";
             groupBox1.Size = new Size(254, 233);
             groupBox1.TabIndex = 5;
@@ -106,7 +106,7 @@
             // lbl_login
             // 
             lbl_login.AutoSize = true;
-            lbl_login.Location = new Point(142, 400);
+            lbl_login.Location = new Point(138, 375);
             lbl_login.Name = "lbl_login";
             lbl_login.Size = new Size(183, 15);
             lbl_login.TabIndex = 6;
@@ -122,6 +122,7 @@
             Controls.Add(groupBox1);
             Controls.Add(btn_signin);
             FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
             Name = "signin_form";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Kayıt Ol";

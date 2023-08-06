@@ -20,7 +20,7 @@ namespace NotDefterim.Forms
         notes_form notes_Form; // notes_form örneğini burada tanımlayın
         db_connection dbConnection = new db_connection();
 
-        public edit_note_form(note tempNote,bool? readOnly)
+        public edit_note_form(note tempNote, bool? readOnly)
         {
             InitializeComponent();
             this.tempNote = tempNote;
@@ -45,7 +45,7 @@ namespace NotDefterim.Forms
                 tbx_noteContent.ReadOnly = true;
                 btn_save.Visible = false;
             }
-            
+
 
         }
 

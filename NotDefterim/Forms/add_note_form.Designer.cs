@@ -43,7 +43,7 @@
             tbx_noteContent.Name = "tbx_noteContent";
             tbx_noteContent.ScrollBars = ScrollBars.Vertical;
             tbx_noteContent.Size = new Size(776, 317);
-            tbx_noteContent.TabIndex = 0;
+            tbx_noteContent.TabIndex = 1;
             tbx_noteContent.TabStop = false;
             tbx_noteContent.TextChanged += tbx_noteContent_TextChanged;
             // 
@@ -53,7 +53,8 @@
             btn_save.Location = new Point(369, 399);
             btn_save.Name = "btn_save";
             btn_save.Size = new Size(94, 39);
-            btn_save.TabIndex = 1;
+            btn_save.TabIndex = 2;
+            btn_save.TabStop = false;
             btn_save.Text = "KAYDET";
             btn_save.UseVisualStyleBackColor = true;
             btn_save.Click += btn_save_Click;
@@ -63,7 +64,7 @@
             tbx_header.Location = new Point(313, 21);
             tbx_header.Name = "tbx_header";
             tbx_header.Size = new Size(240, 23);
-            tbx_header.TabIndex = 2;
+            tbx_header.TabIndex = 0;
             tbx_header.TabStop = false;
             // 
             // lbl_header
@@ -97,6 +98,7 @@
             Controls.Add(btn_save);
             Controls.Add(tbx_noteContent);
             FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
             Name = "add_note_form";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Not Ekle";

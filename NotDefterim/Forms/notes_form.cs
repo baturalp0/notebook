@@ -30,7 +30,7 @@ namespace NotDefterim.Forms
             int id = Convert.ToInt32(user_dt.Rows[0]["id"]);
 
 
-            string query = "SELECT n.*, sn.\"readOnly\",\"shareTime\"\r\nFROM notes n\r\nLEFT JOIN \"sharedNotes\" sn ON n.id = sn.\"notId\"\r\nWHERE (n.user_id = '"+id+"' AND n.deleted = false)\r\n   OR (sn.\"userId\" = '"+id+"' AND n.id = sn.\"notId\")\r\nORDER BY CASE WHEN sn.\"readOnly\" IS NULL THEN 0 ELSE 1 END ASC, n.\"createDate\" ASC, \r\n         CASE WHEN sn.\"readOnly\" IS NOT NULL THEN sn.\"shareTime\" END ASC;\r\n";
+            string query = "SELECT n.*, sn.\"readOnly\",\"shareTime\"\r\nFROM notes n\r\nLEFT JOIN \"sharedNotes\" sn ON n.id = sn.\"notId\"\r\nWHERE (n.user_id = '" + id + "' AND n.deleted = false)\r\n   OR (sn.\"userId\" = '" + id + "' AND n.id = sn.\"notId\")\r\nORDER BY CASE WHEN sn.\"readOnly\" IS NULL THEN 0 ELSE 1 END ASC, n.\"createDate\" ASC, \r\n         CASE WHEN sn.\"readOnly\" IS NOT NULL THEN sn.\"shareTime\" END ASC;\r\n";
 
 
             dataTable = dbConnection.get_npgsql(query);
@@ -97,7 +97,7 @@ namespace NotDefterim.Forms
 
                     if (isUserOwner(notId))
                     {
-                            row.DefaultCellStyle.BackColor = Color.Yellow;
+                        row.DefaultCellStyle.BackColor = Color.Yellow;
 
                     }
                 }
@@ -106,7 +106,27 @@ namespace NotDefterim.Forms
 
             dataGridViewNotes.CellFormatting += DataGridView1_CellFormatting;
 
+            //Sütunların oranlarını ayarlayacağız
+            AdjustColumnWidths();
 
+
+        }
+
+        private void AdjustColumnWidths()
+        {
+            int totalWidth = dataGridViewNotes.Width;
+
+            // İstediğim oranlar
+            int column1Width = (int)(totalWidth * 0.10);
+            int column2Width = (int)(totalWidth * 0.50);
+            int column3Width = (int)(totalWidth * 0.20);
+            int column4Width = (int)(totalWidth * 0.20);
+
+            // Sütun genişliklerini ayarlama ksımı
+            dataGridViewNotes.Columns[0].Width = column1Width;
+            dataGridViewNotes.Columns["noteTitle"].Width = column2Width;
+            dataGridViewNotes.Columns["buttonShareColumn"].Width = column3Width;
+            dataGridViewNotes.Columns["buttonDeleteColumn"].Width = column3Width;
         }
 
         private void btn_addNotes_Click(object sender, EventArgs e)
@@ -199,7 +219,7 @@ namespace NotDefterim.Forms
                     }
                 }
                 //PAYLAŞ BUTONU İŞLEMLERİ
-                else if(column.Name == "buttonShareColumn")
+                else if (column.Name == "buttonShareColumn")
                 {
                     if (column is DataGridViewButtonColumn) // Sütun bir düğme sütunu mu?
                     {
@@ -207,7 +227,7 @@ namespace NotDefterim.Forms
                         DataGridViewRow row = dataGridViewNotes.Rows[e.RowIndex];
                         int id = Convert.ToInt32(row.Cells["id"].Value);
                         int user_id = Convert.ToInt32(row.Cells["user_id"].Value);
-                        string noteTitle = row.Cells["noteTitle"].Value.ToString(); 
+                        string noteTitle = row.Cells["noteTitle"].Value.ToString();
                         string noteContent = row.Cells["noteContent"].Value.ToString();
                         bool deleted = Convert.ToBoolean(row.Cells["deleted"].Value);
                         DateTime createDate = Convert.ToDateTime(row.Cells["createDate"].Value);
@@ -225,7 +245,7 @@ namespace NotDefterim.Forms
                         //aldığımız bilgileri açtığımız form ile gönderiyoruz. Paylaş ekranı classının constructorını düzenledim bunun için.
                         share_note_form share_Note_Form = new share_note_form(tempNoteShare);
                         share_Note_Form.ShowDialog();
-                    
+
                     }
 
                 }
@@ -277,18 +297,18 @@ namespace NotDefterim.Forms
                         isReadOnly = Convert.ToBoolean(row.Cells["readOnly"].Value);
                     }
 
-                    edit_note_form edit_Note_Form = new edit_note_form(tempNote,isReadOnly);
+                    edit_note_form edit_Note_Form = new edit_note_form(tempNote, isReadOnly);
                     edit_Note_Form.ShowDialog();
                 }
             }
         }
 
         bool isUserOwner(int not_id) //id'si yollanan not giriş yapmış kullanıcının oluşturduğu bir not ise true dönecek yoksa false dönecek
-        { 
+        {
             int currentUserId = Convert.ToInt32(user_dt.Rows[0]["id"]); //giriş yapmış kullanıcının id'si
             int notId = not_id; //fonksiyona gönderilen notun id'si
 
-            string query = "SELECT * FROM notes WHERE id= '"+not_id+"'"; //id'si gönderilen notun sorgusu
+            string query = "SELECT * FROM notes WHERE id= '" + not_id + "'"; //id'si gönderilen notun sorgusu
             DataTable tempDT = dbConnection.get_npgsql(query);
 
             int noteOwnerId = Convert.ToInt32(tempDT.Rows[0]["user_id"]); //not sahibinin id'si
@@ -306,6 +326,12 @@ namespace NotDefterim.Forms
 
         }
 
-       
+        private void btn_logout_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            login_form login_form = new login_form();   
+            login_form.ShowDialog();
+            
+        }
     }
 }

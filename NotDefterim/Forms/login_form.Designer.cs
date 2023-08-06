@@ -99,6 +99,7 @@
             Controls.Add(groupBox1);
             Controls.Add(btn_login);
             FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
             Name = "login_form";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Giriş Yap";

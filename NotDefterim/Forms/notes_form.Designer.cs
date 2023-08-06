@@ -31,6 +31,7 @@
             dataGridViewNotes = new DataGridView();
             lbl_myNotes = new Label();
             btn_addNotes = new Button();
+            btn_logout = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridViewNotes).BeginInit();
             SuspendLayout();
             // 
@@ -66,15 +67,27 @@
             btn_addNotes.UseVisualStyleBackColor = true;
             btn_addNotes.Click += btn_addNotes_Click;
             // 
+            // btn_logout
+            // 
+            btn_logout.Location = new Point(12, 12);
+            btn_logout.Name = "btn_logout";
+            btn_logout.Size = new Size(75, 23);
+            btn_logout.TabIndex = 3;
+            btn_logout.Text = "Çıkış Yap";
+            btn_logout.UseVisualStyleBackColor = true;
+            btn_logout.Click += btn_logout_Click;
+            // 
             // notes_form
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(436, 450);
+            Controls.Add(btn_logout);
             Controls.Add(btn_addNotes);
             Controls.Add(lbl_myNotes);
             Controls.Add(dataGridViewNotes);
             FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
             Name = "notes_form";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Notlarım";
@@ -89,5 +102,6 @@
         private DataGridView dataGridViewNotes;
         private Label lbl_myNotes;
         private Button btn_addNotes;
+        private Button btn_logout;
     }
 }

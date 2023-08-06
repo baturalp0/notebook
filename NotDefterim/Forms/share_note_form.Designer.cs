@@ -74,6 +74,7 @@
             Controls.Add(cbx_share);
             Controls.Add(tbx_shareEmail);
             FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
             Name = "share_note_form";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Paylaş";
