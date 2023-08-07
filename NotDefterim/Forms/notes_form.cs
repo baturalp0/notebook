@@ -27,7 +27,7 @@ namespace NotDefterim.Forms
 
         private void notes_form_Load(object sender, EventArgs e)
         {
-
+            
             sortTable();
 
             foreach (DataGridViewColumn column in dataGridViewNotes.Columns) //Notlar sütunu hariç diğerlerini gizledim
@@ -97,9 +97,6 @@ namespace NotDefterim.Forms
 
                     }
                 }
-
-                
-
             }
 
 
@@ -138,15 +135,7 @@ namespace NotDefterim.Forms
         //Not ekle ekranında kaydet butonuna tıklandığında dgvNotes'u yeniliyorum ki yeni eklenen not ekranda görünsün. Bu fonksiyonu not ekleme ekranında kaydet butonu click'i altında kullanacağım
         public void refreshDataGridViewNotes()
         {
-            int id = Convert.ToInt32(user_dt.Rows[0]["id"]);
-
-            string query = "SELECT n.*, sn.\"readOnly\",\"shareTime\"\r\nFROM notes n\r\nLEFT JOIN \"sharedNotes\" sn ON n.id = sn.\"notId\"\r\nWHERE (n.user_id = '" + id + "' AND n.deleted = false)\r\n   OR (sn.\"userId\" = '" + id + "' AND n.id = sn.\"notId\")\r\nORDER BY CASE WHEN sn.\"readOnly\" IS NULL THEN 0 ELSE 1 END ASC, n.\"createDate\" ASC, \r\n         CASE WHEN sn.\"readOnly\" IS NOT NULL THEN sn.\"shareTime\" END ASC;\r\n";
-
-            DataTable tempDataTable = dbConnection.get_npgsql(query);
-
-            dataGridViewNotes.DataSource = tempDataTable;
-
-            dataGridViewNotes.Refresh();
+            sortTable();
         }
         //Sil ve paylaş butonuna tıklandığımda yapılacak işlemler CellContentClick ile yapılıyor.
         //SİL BUTONU İŞLEMLERİ
@@ -327,50 +316,110 @@ namespace NotDefterim.Forms
 
         private void btn_logout_Click(object sender, EventArgs e)
         {
-            this.Hide();
-            login_form login_form = new login_form();   
-            login_form.ShowDialog();
-            
+            Application.Restart();
         }
 
         private void sortTable()
         {
             int id = Convert.ToInt32(user_dt.Rows[0]["id"]);
 
-            string query = "SELECT n.*, sn.\"readOnly\",\"shareTime\"\r\nFROM notes n\r\nLEFT JOIN \"sharedNotes\" sn ON n.id = sn.\"notId\"\r\nWHERE (n.user_id = '" + id + "' AND n.deleted = false)\r\n   OR (sn.\"userId\" = '" + id + "' AND n.id = sn.\"notId\")\r\nORDER BY CASE WHEN sn.\"readOnly\" IS NULL THEN 0 ELSE 1 END ASC, n.\"createDate\" ASC, \r\n         CASE WHEN sn.\"readOnly\" IS NOT NULL THEN sn.\"shareTime\" END ASC;\r\n";
+            string query = "SELECT n.*, sn.\"readOnly\",\"shareTime\"\r\nFROM notes n\r\nLEFT JOIN \"sharedNotes\" sn ON n.id = sn.\"notId\"\r\nWHERE (n.user_id = '" + id + "' AND n.deleted = false)\r\n   OR (sn.\"userId\" = '" + id + "' AND n.id = sn.\"notId\")\r\n";
 
             dataTable = dbConnection.get_npgsql(query);
 
-            dataGridViewNotes.DataSource = dataTable;
+            List<DataRow> tempDtRows = dataTable.AsEnumerable()
+                .Where(row => row.Field<int>("user_id") == id)
+                .OrderBy(row => row.Field<DateTime>("createDate"))
+                .ToList();
 
-            //not sahibi giriş yapmış kullanıcı
+            List<DataRow> tempDt2Rows = dataTable.AsEnumerable()
+                .Where(row => row.Field<int>("user_id") != id)
+                .OrderBy(row => row.Field<DateTime?>("shareTime"))
+                .ToList();
 
-            DataTable tempDt = dataTable.AsEnumerable()
-            .Where(row => row.Field<int>("user_id") == id)
-            .OrderBy(row => row.Field<DateTime>("createDate"))
-            .CopyToDataTable();
-
-            //not paylaşım yoluyla alınmış
-
-            DataTable tempDt2 = dataTable.AsEnumerable()
-           .Where(row => row.Field<int>("user_id") != id)
-           .OrderBy(row => row.Field<DateTime>("shareTime"))
-           .CopyToDataTable();
+            List<DataRow> mergedRows = new List<DataRow>();
+            mergedRows.AddRange(tempDtRows);
+            mergedRows.AddRange(tempDt2Rows);
 
 
-            // Ayıklanan ve sıralanan verileri birleştiriyoruz
-            DataTable mergedDataTable = new DataTable();
-            mergedDataTable = tempDt.Copy();
-            foreach (DataRow row in tempDt2.Rows)
+            DataTable mergedDataTable = dataTable.Clone();
+
+            foreach (DataRow row in mergedRows)
             {
                 mergedDataTable.ImportRow(row);
             }
 
-            // Birleştirilmiş veriyi DataGridView'a atıyoruz
             dataGridViewNotes.DataSource = mergedDataTable;
-
+            dataGridViewNotes.Refresh();
 
         }
+
+        //private void sortTable()
+        //{
+        //    int id = Convert.ToInt32(user_dt.Rows[0]["id"]);
+
+        //    string query = "SELECT n.*, sn.\"readOnly\",\"shareTime\"\r\nFROM notes n\r\nLEFT JOIN \"sharedNotes\" sn ON n.id = sn.\"notId\"\r\nWHERE (n.user_id = '" + id + "' AND n.deleted = false)\r\n   OR (sn.\"userId\" = '" + id + "' AND n.id = sn.\"notId\")\r\n";
+
+        //    dataTable = dbConnection.get_npgsql(query);
+
+        //    // Güncellemeyi duraklat
+        //    dataGridViewNotes.SuspendLayout();
+
+        //    try
+        //    {
+        //        DataTable tempDt = dataTable.AsEnumerable()
+        //            .Where(row => row.Field<int>("user_id") == id)
+        //            .OrderBy(row => row.Field<DateTime?>("createDate"))
+        //            .CopyToDataTable();
+
+        //        DataTable tempDt2 = dataTable.AsEnumerable()
+        //            .Where(row => row.Field<int>("user_id") != id)
+        //            .OrderBy(row => row.Field<DateTime?>("shareTime"))
+        //            .CopyToDataTable();
+
+        //        // Hem tempDt hem de tempDt2 boşsa, dataTable'ı kullanarak devam ediyoruz
+        //        if (tempDt.Rows.Count == 0 && tempDt2.Rows.Count == 0)
+        //        {
+        //            dataGridViewNotes.DataSource = dataTable;
+        //        }
+        //        else
+        //        {
+        //            DataTable mergedDataTable = dataTable.Clone();
+
+        //            foreach (DataRow row in tempDt.Rows)
+        //            {
+        //                mergedDataTable.ImportRow(row);
+        //            }
+
+        //            foreach (DataRow row in tempDt2.Rows)
+        //            {
+        //                mergedDataTable.ImportRow(row);
+        //            }
+
+        //            // Birleştirilmiş veriyi DataGridView'a atıyoruz
+        //            dataGridViewNotes.DataSource = mergedDataTable;
+        //        }
+        //    }
+        //    catch (InvalidOperationException)
+        //    {
+        //        // Hata durumunda dataTable'ı direkt olarak dataGridViewNotes'a atıyoruz
+        //        dataGridViewNotes.DataSource = dataTable;
+        //    }
+        //    finally
+        //    {
+        //        // Güncellemeyi devam ettir
+        //        dataGridViewNotes.ResumeLayout();
+        //    }
+        //}
+
+
+
+
+
+
+
+
+
 
 
 

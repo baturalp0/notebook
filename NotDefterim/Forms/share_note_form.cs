@@ -34,7 +34,6 @@ namespace NotDefterim.Forms
             user userSender = returnSenderUser();
             user userShared = returnSharedUser();
 
-
             //kullanıcının girdiği mail ve checkBox durumunu değişkenlere aktarıyorum.
             string shareEmail = tbx_shareEmail.Text;
             bool readOnly = cbx_share.Checked;
@@ -80,28 +79,18 @@ namespace NotDefterim.Forms
                                 string addQuery = "INSERT INTO \"sharedNotes\" (\"notId\",\"userId\",\"readOnly\") values ('" + note.id + "','" + userShared.id + "','" + readOnly + "') ";
                                 dbConnection.add_npgsql(addQuery); //sorguyu çalıştırıyoruz.
 
-
                                 MessageBox.Show("Başarıyla paylaşıldı!");
 
                                 this.Hide();
-
                             }
-
-
                         }
-
                     }
                     else
                     { //Hesap aktif değil demektir.
                         MessageBox.Show("Bu hesap aktif değildir");
                     }
-
-
-
                 }
-
             }
-
         }
 
         private long isEmailExist(string email)
@@ -151,14 +140,7 @@ namespace NotDefterim.Forms
                     return user;
 
                 }
-
             }
-
-
-
-
-
-
         }
 
         private note returnNote() //Tıklanan notu nesne oalrak dönen metod.
@@ -198,9 +180,6 @@ namespace NotDefterim.Forms
                 // Kullanıcı bulunamadı veya hata durumu için uygun işlem yapılabilir.
                 return null; // Veya başka bir değer döndürülebilir.
             }
-
-
-
         }
 
         private bool isSharedNoteExist(int not_id, int user_id)
@@ -216,12 +195,6 @@ namespace NotDefterim.Forms
             {
                 return true;
             }
-
-
         }
-
-
-
-
     }
 }

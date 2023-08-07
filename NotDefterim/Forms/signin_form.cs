@@ -11,12 +11,15 @@ using System.Windows.Forms;
 using Npgsql;
 using System.Collections;
 using NotDefterim.Forms;
+using System.Xml.Serialization;
 
 namespace NotDefterim
 {
     public partial class signin_form : Form
     {
         NpgsqlConnection connection = new NpgsqlConnection("server=localhost; port=5432; Database=notebook;user Id=postgres; password=antalya");
+        db_connection dbConnection = new db_connection();
+        login_form login_Form = new login_form();
 
         public signin_form()
         {
@@ -50,17 +53,12 @@ namespace NotDefterim
                 }
                 else if (isEmailExist(email) == 0)
                 {
-                    connection.Open();
                     string query = "insert into users (name,surname,email,password) values ('" + name + "' , '" + surname + "' , '" + email + "' , '" + password + "') ";
-                    NpgsqlCommand cmd = new NpgsqlCommand(query, connection);
-                    cmd.ExecuteNonQuery();
-                    connection.Close();
+                    dbConnection.add_npgsql(query);
                     MessageBox.Show("Başarıyla kayıt oluşturuldu.");
+                    clear();
                 }
             }
-
-
-
         }
 
 
@@ -76,7 +74,6 @@ namespace NotDefterim
 
         private void lbl_login_Click(object sender, EventArgs e) //kayıt ol ekranından giriş yap ekranına geçiş.
         {
-            login_form login_Form = new login_form();
             login_Form.Show();
             this.Hide();
         }
@@ -112,6 +109,15 @@ namespace NotDefterim
             {
                 btn_signin_Click(this, new EventArgs());
             }
+        }
+
+        private void clear()
+        {
+            tbx_email.Clear();
+            tbx_name.Clear();
+            tbx_surname.Clear();
+            tbx_password.Clear();
+            this.ActiveControl = btn_signin; //en son odak butonda kalması için
         }
     }
 }

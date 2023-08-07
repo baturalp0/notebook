@@ -40,13 +40,10 @@ namespace NotDefterim.Forms
 
             else
             {
-                //boş alan yoksa koda devam
-
                 //e-mail db'de var mı yok mu kontrol ediyorum.
                 if (isEmailExist(email) == 1)
                 {
                     string query = "SELECT * FROM users WHERE email = '" + email + "' ";
-
 
                     user_dt = dbConnection.get_npgsql(query);
 
@@ -70,15 +67,12 @@ namespace NotDefterim.Forms
                         MessageBox.Show("Şifre Yanlış");
                     }
 
-
                 }
                 else if (isEmailExist(email) == 0)
                 {
                     MessageBox.Show("Bu mail adresi ile kayıtlı bir kullanıcı bulunamadı.");
                 }
-
             }
-
         }
 
         void goToNotes()
@@ -87,7 +81,6 @@ namespace NotDefterim.Forms
             notes_Form.Show();
             this.Hide();
         }
-
 
         private long isEmailExist(string email)
         {
@@ -121,6 +114,7 @@ namespace NotDefterim.Forms
                 btn_login_Click(this, new EventArgs());
             }
         }
+       
 
 
     }

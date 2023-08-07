@@ -65,9 +65,6 @@ namespace NotDefterim.Forms
                 //Kaydettikten sonra başarılı mesajı verip formu kapatıyoruz.
                 MessageBox.Show("Kaydedildi");
                 this.Hide();
-
-
-
             }
 
         }
